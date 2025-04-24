@@ -7,7 +7,6 @@ def gcd(a, b):
     return a
 
 def inverse_mod(a, n):
-    """Modular inverse using Extended Euclidean Algorithm"""
     t, new_t = 0, 1
     r, new_r = n, a
     while new_r != 0:
@@ -15,7 +14,7 @@ def inverse_mod(a, n):
         t, new_t = new_t, t - quotient * new_t
         r, new_r = new_r, r - quotient * new_r
     if r > 1:
-        return None  # No inverse
+        return None 
     if t < 0:
         t = t + n
     return t
@@ -27,17 +26,15 @@ class Point:
 
 def add_points(P, Q, a, n):
     if P.x == Q.x and P.y == Q.y:
-        # Point doubling
         num = (3 * P.x**2 + a) % n
         den = (2 * P.y) % n
     else:
-        # Point addition
         num = (Q.y - P.y) % n
         den = (Q.x - P.x) % n
 
     inv_den = inverse_mod(den, n)
     if inv_den is None:
-        return gcd(den, n)  # Found a factor!
+        return gcd(den, n)  
 
     lam = (num * inv_den) % n
     x3 = (lam**2 - P.x - Q.x) % n
@@ -48,7 +45,7 @@ def scalar_mult(k, P, a, n):
     R = P
     for i in range(1, k):
         result = add_points(R, P, a, n)
-        if isinstance(result, int):  # GCD detected
+        if isinstance(result, int):  
             return result
         R = result
     return None
@@ -65,7 +62,7 @@ def lenstra_ecm(N, B=50):
         try:
             k = math.prod([p**int(math.log(B, p)) for p in range(2, B) if is_prime(p)])
         except OverflowError:
-            k = 2**16  # Fallback if k gets too big
+            k = 2**16 
 
         factor = scalar_mult(k, P, a, N)
         if factor and factor != N:
@@ -87,7 +84,6 @@ def factor_all_ecm(N, B=50):
             return
         factor = lenstra_ecm(n, B)
         if factor is None or factor == n:
-            # Failed to factor, treat as prime (or retry with higher B)
             factors.append(n)
             return
         _factor(factor)
